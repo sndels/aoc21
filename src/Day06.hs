@@ -1,7 +1,5 @@
 module Day06 where
 
-import Debug.Trace
-
 split :: Eq a => a -> [a] -> [[a]]
 split d [] = []
 split d s = x : split d (drop 1 y) where (x, y) = span (/= d) s
@@ -23,7 +21,7 @@ simulate :: Int -> [Int] -> [Int]
 simulate days fish = recur days (length fish) fish
   where
     recur 0 _ fish = fish
-    recur days prevCount fish = trace ("Day " ++ show days ++ " fish " ++ show (length fish) ++ " diff " ++ show (prevCount - length fish)) recur (days - 1) (length fish) $ step fish
+    recur days prevCount fish = recur (days - 1) (length fish) $ step fish
 
 d06p1 :: String -> IO ()
 d06p1 input = do
