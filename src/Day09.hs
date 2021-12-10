@@ -1,7 +1,7 @@
 module Day09 where
 
-import Data.Char ( ord )
-import Data.List ( sort )
+import Data.Char (ord)
+import Data.List (sort)
 
 data HeightMap = HeightMap [[Int]] Int Int
 
@@ -26,7 +26,7 @@ _ !!! (_, -1) = maxBound
   | otherwise = (hm !! y) !! x
 
 getIfMin :: (Int, Int) -> HeightMap -> [(Int, Int)]
-getIfMin (x, y) hm = [(x, y) | all (>c) ltrb]
+getIfMin (x, y) hm = [(x, y) | all (> c) ltrb]
   where
     c = hm !!! (x, y)
     ltrb = map (hm !!!) [(x - 1, y), (x, y - 1), (x + 1, y), (x, y + 1)]
@@ -49,20 +49,21 @@ d09p1 input = do
 
 mapBasin :: (Int, Int) -> HeightMap -> Int
 mapBasin c hm = recur [c] [] hm
-  where recur [] _ _ = 0
-        recur (c : cs) seen hm = 1 + recur(cs ++ ncs) (seen ++ (c:ncs)) hm
-          where
-            basinFilter (c, v) = v < 9 && v > cv && notElem c seen
-            ncs = map fst . filter basinFilter $ map (\cn -> (cn, hm !!! cn)) ltrb
-            ltrb = [(x - 1, y), (x + 1, y), (x, y - 1),(x, y + 1)]
-            cv = hm !!! c
-            (x, y) = c
+  where
+    recur [] _ _ = 0
+    recur (c : cs) seen hm = 1 + recur (cs ++ ncs) (seen ++ (c : ncs)) hm
+      where
+        basinFilter (c, v) = v < 9 && v > cv && notElem c seen
+        ncs = map fst . filter basinFilter $ map (\cn -> (cn, hm !!! cn)) ltrb
+        ltrb = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
+        cv = hm !!! c
+        (x, y) = c
 
 d09p2 :: String -> IO ()
 d09p2 input = do
   let hm = parse input
   let mins = findMins hm
   let basins = map (`mapBasin` hm) mins
-  let topThreeBasins = take 3. reverse $ sort basins
+  let topThreeBasins = take 3 . reverse $ sort basins
   let result = product topThreeBasins
   putStrLn ("Product of the sizes of the three largest basins is " ++ show result)
