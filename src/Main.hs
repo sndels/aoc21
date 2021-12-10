@@ -8,6 +8,7 @@ import Day06
 import Day07
 import Day08
 import Day09
+import Day10
 import System.Directory
 import System.Environment
 import System.IO
@@ -45,6 +46,9 @@ run day part inputPath = do
     9 -> case part of
       1 -> d09p1 input
       2 -> d09p2 input
+    10 -> case part of
+      1 -> d10p1 input
+      2 -> d10p2 input
     d -> putStrLn $ "Day '" ++ show d ++ "' is not implemented"
 
 main = do
