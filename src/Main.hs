@@ -1,20 +1,20 @@
-import Day00
-import Day01
-import Day02
-import Day03
-import Day04
-import Day05
-import Day06
-import Day07
-import Day08
-import Day09
-import Day10
-import Day11
-import Day12
-import Day13
-import System.Directory
-import System.Environment
-import System.IO
+import Day00 ( d00p1, d00p2 )
+import Day01 ( d01p1, d01p2 )
+import Day02 ( d02p1, d02p2 )
+import Day03 ( d03p1, d03p2 )
+import Day04 ( d04p1, d04p2 )
+import Day05 ( d05p1, d05p2 )
+import Day06 ( d06p1, d06p2 )
+import Day07 ( d07p1, d07p2 )
+import Day08 ( d08p1, d08p2 )
+import Day09 ( d09p1, d09p2 )
+import Day10 ( d10p1, d10p2 )
+import Day11 ( d11p1, d11p2 )
+import Day12 ( d12p1, d12p2 )
+import Day13 ( d13p1, d13p2 )
+import Day14 ( d14p1, d14p2 )
+import System.Directory ( doesFileExist )
+import System.Environment ( getArgs )
 
 run day part inputPath = do
   input <- readFile inputPath
@@ -61,6 +61,9 @@ run day part inputPath = do
     13 -> case part of
       1 -> d13p1 input
       2 -> d13p2 input
+    14 -> case part of
+      1 -> d14p1 input
+      2 -> d14p2 input
     d -> putStrLn $ "Day '" ++ show d ++ "' is not implemented"
 
 main = do
