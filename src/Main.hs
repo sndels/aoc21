@@ -17,6 +17,7 @@ import Day15 ( d15p1, d15p2 )
 import Day16 ( d16p1, d16p2 )
 import Day17 ( d17p1, d17p2 )
 import Day18 ( d18p1, d18p2 )
+import Day19 ( d19p1, d19p2 )
 import System.Directory ( doesFileExist )
 import System.Environment ( getArgs )
 
@@ -80,6 +81,9 @@ run day part inputPath = do
     18 -> case part of
       1 -> d18p1 input
       2 -> d18p2 input
+    19 -> case part of
+      1 -> d19p1 input
+      2 -> d19p2 input
     d -> putStrLn $ "Day '" ++ show d ++ "' is not implemented"
 
 main = do
