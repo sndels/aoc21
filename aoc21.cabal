@@ -31,6 +31,7 @@ executable aoc21
       Day17
       Day18
       Day19
+      Day20
       Paths_aoc21
   hs-source-dirs:
       src
