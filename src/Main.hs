@@ -20,8 +20,10 @@ import Day18 ( d18p1, d18p2 )
 import Day19 ( d19p1, d19p2 )
 import Day20 ( d20p1, d20p2 )
 import Day21 ( d21p1, d21p2 )
+import Day22 ( d22p1, d22p2 )
 import System.Directory ( doesFileExist )
 import System.Environment ( getArgs )
+import System.TimeIt
 
 run day part inputPath = do
   input <- readFile inputPath
@@ -92,6 +94,9 @@ run day part inputPath = do
     21 -> case part of
       1 -> d21p1 input
       2 -> d21p2 input
+    22 -> case part of
+      1 -> d22p1 input
+      2 -> d22p2 input
     d -> putStrLn $ "Day '" ++ show d ++ "' is not implemented"
 
 main = do
@@ -104,5 +109,5 @@ main = do
           else "res/day" ++ show day ++ ".txt"
   inputExists <- doesFileExist inputPath
   if inputExists
-    then run day part inputPath
+    then timeIt (run day part inputPath)
     else putStrLn $ "Missing input for day " ++ show day
