@@ -1,28 +1,29 @@
-import Day00 ( d00p1, d00p2 )
-import Day01 ( d01p1, d01p2 )
-import Day02 ( d02p1, d02p2 )
-import Day03 ( d03p1, d03p2 )
-import Day04 ( d04p1, d04p2 )
-import Day05 ( d05p1, d05p2 )
-import Day06 ( d06p1, d06p2 )
-import Day07 ( d07p1, d07p2 )
-import Day08 ( d08p1, d08p2 )
-import Day09 ( d09p1, d09p2 )
-import Day10 ( d10p1, d10p2 )
-import Day11 ( d11p1, d11p2 )
-import Day12 ( d12p1, d12p2 )
-import Day13 ( d13p1, d13p2 )
-import Day14 ( d14p1, d14p2 )
-import Day15 ( d15p1, d15p2 )
-import Day16 ( d16p1, d16p2 )
-import Day17 ( d17p1, d17p2 )
-import Day18 ( d18p1, d18p2 )
-import Day19 ( d19p1, d19p2 )
-import Day20 ( d20p1, d20p2 )
-import Day21 ( d21p1, d21p2 )
-import Day22 ( d22p1, d22p2 )
-import System.Directory ( doesFileExist )
-import System.Environment ( getArgs )
+import Day00 (d00p1, d00p2)
+import Day01 (d01p1, d01p2)
+import Day02 (d02p1, d02p2)
+import Day03 (d03p1, d03p2)
+import Day04 (d04p1, d04p2)
+import Day05 (d05p1, d05p2)
+import Day06 (d06p1, d06p2)
+import Day07 (d07p1, d07p2)
+import Day08 (d08p1, d08p2)
+import Day09 (d09p1, d09p2)
+import Day10 (d10p1, d10p2)
+import Day11 (d11p1, d11p2)
+import Day12 (d12p1, d12p2)
+import Day13 (d13p1, d13p2)
+import Day14 (d14p1, d14p2)
+import Day15 (d15p1, d15p2)
+import Day16 (d16p1, d16p2)
+import Day17 (d17p1, d17p2)
+import Day18 (d18p1, d18p2)
+import Day19 (d19p1, d19p2)
+import Day20 (d20p1, d20p2)
+import Day21 (d21p1, d21p2)
+import Day22 (d22p1, d22p2)
+import Day23 (d23p1, d23p2)
+import System.Directory (doesFileExist)
+import System.Environment (getArgs)
 import System.TimeIt
 
 run day part inputPath = do
@@ -97,6 +98,9 @@ run day part inputPath = do
     22 -> case part of
       1 -> d22p1 input
       2 -> d22p2 input
+    23 -> case part of
+      1 -> d23p1 input
+      2 -> d23p2 input
     d -> putStrLn $ "Day '" ++ show d ++ "' is not implemented"
 
 main = do
