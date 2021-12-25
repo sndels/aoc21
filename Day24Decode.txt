@@ -1,0 +1,54 @@
+Steps taken:
+- try running by hand
+  - does indeed build stuff from the start
+- implement run with string registers inputs as 'i[Index]'
+  - too much output for final state
+- evaluate ops on constants in place
+  - still too much output for final state
+- maybe there is a common structure to the subprogs?
+  - yes, there is
+        inp w mul x 0 add x z mod x 26 div z  1 add x  13 eql x w eql x 0 mul y 0 add y 25 mul y x add y 1 mul z y mul y 0 add y w add y  3 mul y x add z y
+                                       div z  1 add x  11                                                                          add y 12                 
+                                       div z  1 add x  15                                                                          add y  9                 
+                                       div z 26 add x  -6                                                                          add y 12                 
+                                       div z  1 add x  15                                                                          add y  2                 
+                                       div z 26 add x  -8                                                                          add y  1                 
+                                       div z 26 add x  -4                                                                          add y  1                 
+                                       div z  1 add x  15                                                                          add y 13                 
+                                       div z  1 add x  10                                                                          add y  1                 
+                                       div z  1 add x  11                                                                          add y  6                 
+                                       div z 26 add x -11                                                                          add y  2                 
+                                       div z 26 add x   0                                                                          add y 11                 
+                                       div z 26 add x  -8                                                                          add y 10                 
+                                       div z 26 add x  -7                                                                          add y  3                 
+
+        w = input
+        x = ((z % 26) + n1) != w
+        y = (25 * x) + 1
+        z = (z / n0) * y
+        y = (w + n2) * x
+        z = z + y
+        so
+        x = (((z % 26) + n1) != w)
+        z = ((z / n0) * ((25 * x) + 1)) + ((w + n2) * x)
+
+  - Constants per subprog
+        inp w
+        mul x 0
+        add x z
+        mod x 26
+    [4] div z (.+)
+    [5] add x (.+)
+        eql x w
+        eql x 0
+        mul y 0
+        add y 25
+        mul y x
+        add y 1
+        mul z y
+        mul y 0
+        add y w
+   [15] add y (.+)
+        mul y x
+        add z y
+
