@@ -23,6 +23,7 @@ import Day21 (d21p1, d21p2)
 import Day22 (d22p1, d22p2)
 import Day23 (d23p1, d23p2)
 import Day24 (d24p1, d24p2)
+import Day25 (d25p1)
 import System.Directory (doesFileExist)
 import System.Environment (getArgs)
 import System.TimeIt
@@ -105,6 +106,8 @@ run day part inputPath = do
     24 -> case part of
       1 -> d24p1 input
       2 -> d24p2 input
+    25 -> case part of
+      1 -> d25p1 input
     d -> putStrLn $ "Day '" ++ show d ++ "' is not implemented"
 
 main = do
