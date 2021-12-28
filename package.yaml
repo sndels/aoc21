@@ -8,6 +8,7 @@ dependencies:
 - containers >= 0.5
 - split >= 0.2
 - timeit >= 2.0
+- psqueues == 0.2.7.3
 
 executables:
   aoc21:
