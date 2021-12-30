@@ -1,11 +1,13 @@
 module Day24 where
 
-import Data.Dynamic
-import Data.Foldable
-import Data.List.Split
-import Data.Maybe
+import Data.Dynamic (Dynamic, dynTypeRep, fromDyn, toDyn)
+import Data.Foldable (Foldable (foldl'))
+import Data.List (foldl', groupBy, sortBy)
+import Data.List.Split (chunksOf, splitOn)
+import qualified Data.Map.Strict as Map
+import Data.Maybe (fromJust, isJust)
 import Data.Typeable (Proxy (..), TypeRep, typeRep)
-import Text.Read
+import Text.Read (readMaybe)
 
 -- See Day14Decode.txt for the investigation, all of the code is still here
 
@@ -61,24 +63,13 @@ mulOp a b alu = store a (av * b) alu
   where
     av = load a alu
 
-div' :: Int -> Int -> Int
-div' a b = if r >= 0 then floor r else ceiling r
-  where
-    r = toRational a / toRational b
-
 divOp :: Char -> Int -> ALU -> ALU
-divOp a b alu = store a (div' av b) alu
+divOp a b alu = store a (av `div` b) alu
   where
     av = load a alu
 
-mod' :: Int -> Int -> Int
-mod' a b = round ((r - trunc) * toRational b)
-  where
-    trunc = toRational (if r >= 0 then floor r else ceiling r)
-    r = toRational a / toRational b
-
 modOp :: Char -> Int -> ALU -> ALU
-modOp a b alu = store a (mod' av b) alu
+modOp a b alu = store a (av `mod` b) alu
   where
     av = load a alu
 
@@ -89,10 +80,10 @@ eqlOp a b alu = store a (fromEnum $ av == b) alu
 
 data Op = Op {name :: String, a :: Char, b :: Dynamic} deriving (Show)
 
-subprog :: Int -> Int -> Int -> Int -> Int -> Int
-subprog n0 n1 n2 z w = (div' z n0 * ((25 * x) + 1)) + ((w + n2) * x)
+subprog :: (Int, Int, Int) -> Int -> Int -> Int
+subprog (n0, n1, n2) z w = (z `div` n0 * ((25 * x) + 1)) + ((w + n2) * x)
   where
-    x = fromEnum $ (mod' z 26 + n1) /= w
+    x = fromEnum $ (z `mod` 26 + n1) /= w
 
 charType :: TypeRep
 charType = typeRep (Proxy :: Proxy Char)
@@ -112,14 +103,14 @@ parseOp input = Op name a (maybe (toDyn $ head b) toDyn bc)
 parse :: String -> [Op]
 parse input = map parseOp $ lines input
 
-parseSubprog :: [[Char]] -> Int -> Int -> Int
-parseSubprog ls = subprog n0 n1 n2
+parseSubprog :: [[Char]] -> (Int, Int, Int)
+parseSubprog ls = (n0, n1, n2)
   where
     n0 = read . last . splitOn " " $ ls !! 4
     n1 = read . last . splitOn " " $ ls !! 5
     n2 = read . last . splitOn " " $ ls !! 15
 
-parseSubprogs :: String -> [Int -> Int -> Int]
+parseSubprogs :: String -> [(Int, Int, Int)]
 parseSubprogs input = map parseSubprog $ chunksOf 18 $ lines input
 
 run :: Op -> (ALU, [Int]) -> (ALU, [Int])
@@ -176,14 +167,14 @@ debugRun (Op name a b) (dalu, is)
       then (storeD a "0" dalu, is)
       else
         if isJust ac && isJust bc
-          then (storeD a (show (div' (fromJust ac) (fromJust bc))) dalu, is)
+          then (storeD a (show (fromJust ac `div` fromJust bc)) dalu, is)
           else (storeD a ("(" ++ av ++ "/" ++ bv ++ ")") dalu, is)
   | name == "mod" =
     if av == "0"
       then (storeD a "0" dalu, is)
       else
         if isJust ac && isJust bc
-          then (storeD a (show (mod' (fromJust ac) (fromJust bc))) dalu, is)
+          then (storeD a (show (fromJust ac `mod` fromJust bc)) dalu, is)
           else (storeD a ("(" ++ av ++ "`mod`" ++ bv ++ ")") dalu, is)
   | name == "eql" =
     if isJust ac && isJust bc
@@ -204,29 +195,50 @@ evaluateMONAD :: Foldable t => t Op -> [Int] -> (ALU, [Int])
 evaluateMONAD monad number =
   foldl' (flip run) (initALU, number) monad
 
-evaluateMONAD' :: [Int -> Int -> Int] -> [Int] -> Int
-evaluateMONAD' subprogs number =
-  foldl' (\acc (p, i) -> p acc i) 0 $ zip subprogs number
-
 dumpMONAD :: Foldable t => t Op -> DALU
 dumpMONAD monad =
   fst $ foldl' (flip debugRun) initState monad
   where
     initState = (DALU "0" "0" "0" "0", map (\i -> "i" ++ show i) [0 .. 13])
 
+sub1 num = snd $ recur num
+  where
+    recur [i] =
+      if i == 1
+        then (True, [9])
+        else (False, [i - 1])
+    recur (i : is) =
+      if carry
+        then
+          if i == 1
+            then (True, 9 : rest)
+            else (False, i - 1 : rest)
+        else (False, i : rest)
+      where
+        (carry, rest) = recur is
+    recur [] = error "invalid sub1"
+
+findPassing progs criteria = recur 0 progs $ Map.fromList [(0, 0)]
+  where
+    recur 14 _ states = states Map.! 0
+    recur i (p : ps) states = recur (i + 1) ps $ Map.fromList maxStates
+      where
+        maxStates = map criteria . groupBy (\(z0, _) (z1, _) -> z0 == z1) $ sortBy (\(z0, _) (z1, _) -> compare z0 z1) newStates
+        newStates = concatMap (\(z, num) -> map (\n -> (subprog p z n, num * 10 + n)) $ filter (canPass z) nums) $ Map.toList states
+        canPass z i = n0 /= 26 || (z `mod` 26 + n1) == i
+        nums = [1 .. 9]
+        (n0, n1, _) = p
+
 d24p1 :: String -> IO ()
 d24p1 input = do
   let ops = parse input
   let progs = parseSubprogs input
-  -- let dalu = dumpMONAD ops
-  -- print dalu
-  let modelNumber = [1, 3, 5, 7, 9, 2, 4, 6, 8, 9, 9, 9, 9, 9]
-  let alu = evaluateMONAD ops modelNumber
-  let z = evaluateMONAD' progs modelNumber
-  print alu
-  print z
+  let n = findPassing progs maximum
+  putStrLn ("Largest accepted model number is " ++ show n)
 
 d24p2 :: String -> IO ()
 d24p2 input = do
-  putStr input
-  putStrLn "Let's do this"
+  let ops = parse input
+  let progs = parseSubprogs input
+  let n = findPassing progs minimum
+  putStrLn ("Smallest accepted model number is " ++ show n)

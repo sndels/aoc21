@@ -8,19 +8,19 @@ Steps taken:
 - maybe there is a common structure to the subprogs?
   - yes, there is
         inp w mul x 0 add x z mod x 26 div z  1 add x  13 eql x w eql x 0 mul y 0 add y 25 mul y x add y 1 mul z y mul y 0 add y w add y  3 mul y x add z y
-                                       div z  1 add x  11                                                                          add y 12                 
-                                       div z  1 add x  15                                                                          add y  9                 
-                                       div z 26 add x  -6                                                                          add y 12                 
-                                       div z  1 add x  15                                                                          add y  2                 
-                                       div z 26 add x  -8                                                                          add y  1                 
-                                       div z 26 add x  -4                                                                          add y  1                 
-                                       div z  1 add x  15                                                                          add y 13                 
-                                       div z  1 add x  10                                                                          add y  1                 
-                                       div z  1 add x  11                                                                          add y  6                 
-                                       div z 26 add x -11                                                                          add y  2                 
-                                       div z 26 add x   0                                                                          add y 11                 
-                                       div z 26 add x  -8                                                                          add y 10                 
-                                       div z 26 add x  -7                                                                          add y  3                 
+                                       div z  1 add x  11                                                                          add y 12
+                                       div z  1 add x  15                                                                          add y  9
+                                       div z 26 add x  -6                                                                          add y 12
+                                       div z  1 add x  15                                                                          add y  2
+                                       div z 26 add x  -8                                                                          add y  1
+                                       div z 26 add x  -4                                                                          add y  1
+                                       div z  1 add x  15                                                                          add y 13
+                                       div z  1 add x  10                                                                          add y  1
+                                       div z  1 add x  11                                                                          add y  6
+                                       div z 26 add x -11                                                                          add y  2
+                                       div z 26 add x   0                                                                          add y 11
+                                       div z 26 add x  -8                                                                          add y 10
+                                       div z 26 add x  -7                                                                          add y  3
 
         w = input
         x = ((z % 26) + n1) != w
@@ -51,4 +51,23 @@ Steps taken:
    [15] add y (.+)
         mul y x
         add z y
+- let's now try to run the thing from 99999... down
+  - still too slow
+- memoize monad on z and remaining input?
+  - eats up all the ram and doesn't speed up much
+- saw the meme about having to solve 14*9 instead of 9^14
+  - let's take another look at the structure
+
+    x = (((z % 26) + n1) != w)
+    z = ((z / n0) * ((25 * x) + 1)) + ((w + n2) * x)
+
+    if z % 26 + n1 == input
+      z /= n0
+    else
+      z = (z / n0) * 26 + input + n2
+  - yeah, this isn't going anywhere
+- saw stuff about states being manageable when running for all inputs from the top and deduping after each step
+  - yeah, that solves it but eats up a mad amount of ram
+- could we cull states that don't take the if on div 26s?
+  - yes we can, drops the max number of states down below 10k, run time from ~200s down to milliseconds
 
